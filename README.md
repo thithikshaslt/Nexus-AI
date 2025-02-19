@@ -123,7 +123,3 @@ The chat interface is built using vanilla HTML, CSS, and JavaScript.
 - Enter a prompt and receive responses from the backend API.
 
 ---
-
-## Demo Video
-A demo showcasing the project in action can be found [here](#) (Replace with actual video link).
-
