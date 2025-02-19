@@ -1,6 +1,7 @@
 from django.db import transaction
 from abc import ABC, abstractmethod
-from chatapp.models import ModelProvider, GlobalResponseCounter
+from chatapp.models import ModelProvider, GlobalResponseCounter, RoutingRule
+import re
 
 class LLMStub(ABC):
     """Abstract class for stubbed LLM providers."""
@@ -63,11 +64,25 @@ class LLMStubManager:
 
     @classmethod
     def get_response(cls, provider_name: str, model_name: str, prompt: str) -> dict:
-        """Routes request to the correct provider stub."""
+        """Routes request to the correct provider stub, considering routing rules."""
+       
+        routing_rule = RoutingRule.objects.filter(original_model=model_name).first()
+        print(routing_rule)
+        if routing_rule:
+            print(f"Found routing rule: {routing_rule.original_model} → {routing_rule.redirect_model} with regex: {routing_rule.regex_pattern}")
+            if re.search(routing_rule.regex_pattern, prompt, re.IGNORECASE):  
+                print(f"Prompt matches the regex, redirecting from '{model_name}' to '{routing_rule.redirect_model}'")
+                
+                model_name = routing_rule.redirect_model  
+                # provider_name = "gemini"  # Set the provider to gemini
+
+        print(f"Final provider: {provider_name}")
+        print(f"Final model: {model_name}")
+
         if provider_name not in cls.PROVIDERS:
-            return {"error": "Invalid provider, must alter LLMStubManager.PROVIDERS"}
+            return {"error": f"Invalid provider '{provider_name}', must alter LLMStubManager.PROVIDERS"}
 
         if not ModelProvider.objects.filter(provider_name=provider_name, model_name=model_name).exists():
-            return {"error": "Model not supported under this provider"}
+            return {"error": f"Model '{model_name}' not supported under provider '{provider_name}'"}
 
         return cls.PROVIDERS[provider_name].generate_response(model_name, prompt)

@@ -5,33 +5,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat UI</title>
-    <link rel="stylesheet" href="{% static 'chatapp/chat.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Chat with AI</h1>
+<body class="bg-light">
 
-    <label for="provider">Select Provider:</label>
-    <select id="provider">
-        <option value="" disabled selected></option>
-        <option value="openai">OpenAI</option>
-        <option value="anthropic">Anthropic</option>
-        <option value="gemini">Gemini</option>
-    </select>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Chat with AI</h2>
 
-    <label for="model">Select Model:</label>
-    <select id="model">
-        <!-- Models will be dynamically populated -->
-    </select>
+    <div class="card p-4 shadow-sm">
+        <div class="mb-3">
+            <label for="provider" class="form-label">Select Provider:</label>
+            <select id="provider" class="form-select">
+                <option value="" disabled selected>Choose a provider</option>
+                <option value="openai">OpenAI</option>
+                <option value="anthropic">Anthropic</option>
+                <option value="gemini">Gemini</option>
+            </select>
+        </div>
 
-    <label for="prompt">Enter your prompt:</label>
-    <textarea id="prompt" rows="4"></textarea>
+        <div class="mb-3">
+            <label for="model" class="form-label">Select Model:</label>
+            <select id="model" class="form-select">
+                <!-- Models will be dynamically populated -->
+            </select>
+        </div>
 
-    <button onclick="sendChatRequest()">Send</button>
+        <div class="mb-3">
+            <label for="prompt" class="form-label">Enter your prompt:</label>
+            <textarea id="prompt" class="form-control" rows="4"></textarea>
+        </div>
 
-    <h2>Response:</h2>
-    <p id="response"></p>
-    <div id="response" style="margin-top: 20px; font-weight: bold;"></div>
+        <div class="mb-3">
+            <label for="file-input" class="form-label">Upload a file (optional):</label>
+            <input type="file" id="file-input" class="form-control">
+            <small id="file-name" class="text-muted"></small>
+        </div>
 
-    <script src="{% static 'chatapp/chat.js' %}"></script>
+        <button class="btn btn-primary w-100" onclick="sendChatRequest()" id="chat-form">Send</button>
+    </div>
+
+    <div class="mt-4">
+        <h4>Response:</h4>
+        <div id="response" class="alert alert-secondary"></div>
+    </div>
+</div>
+
+<script src="{% static 'chatapp/chat.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById("file-input").addEventListener("change", function() {
+        let fileName = this.files.length ? this.files[0].name : "No file selected";
+        document.getElementById("file-name").textContent = fileName;
+    });
+
+    async function sendChatRequest() {
+        document.getElementById("response").innerHTML += "<br>"
+        let formData = new FormData();
+        let provider = document.getElementById("provider").value;
+        let model = document.getElementById("model").value;
+        let prompt = document.getElementById("prompt").value;
+        let fileInput = document.getElementById("file-input");
+
+        if (!provider || !model || !prompt) {
+            alert("Please fill in all fields before sending.");
+            return;
+        }
+
+        formData["provider"]= provider;
+        formData["model"] =  model;
+        formData["prompt"] =  prompt;
+        
+        console.log("above", formData)
+
+        if (fileInput.files.length > 0) {
+            formData.append("file", fileInput.files[0]);
+
+            let responseDiv = document.getElementById("response");
+            responseDiv.innerHTML = "File Processed";
+
+            let response = await fetch("/api/v1/chat/upload/", {
+                method: "POST",
+                body: formData
+            });
+
+            let data = await response.json();
+            
+            console.log(data)
+
+            responseDiv.innerHTML = `<br> <strong>Response:</strong> ${data.message || "No message received."}`;
+            
+            if (data.file_url) {
+                let fileLink = document.createElement("a");
+                fileLink.href = data.file_url;
+                fileLink.textContent = "Download File";
+                fileLink.target = "_blank";
+                responseDiv.appendChild(document.createElement("br"));
+                responseDiv.appendChild(fileLink);
+            }
+    }
+        
+
+       console.log(formData)
+        let response = await fetch("/api/v1/chat/completions/", {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+
+        let data = await response.json();
+            
+        console.log(data)
+
+        if ('message' in data){
+            document.getElementById("response").innerHTML = `<strong> ${data['message']} </strong> <br> `
+            document.getElementById("response").innerHTML += data['response']
+        }
+        else{
+            document.getElementById("response").innerHTML += data['response']
+        }
+            
+     }
+
+</script>
+
 </body>
 </html>
