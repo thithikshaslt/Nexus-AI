@@ -11,6 +11,9 @@ from chatapp.models import ModelProvider, RoutingRule
 from django.shortcuts import render
 
 
+def home(request):
+    return render(request, 'home.html')
+
 @api_view(['GET'])
 def get_models(request):
     models = ModelProvider.objects.all()
