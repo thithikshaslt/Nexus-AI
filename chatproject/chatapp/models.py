@@ -5,4 +5,11 @@ class ModelProvider(models.Model):
     model_name = models.CharField(max_length=50)
     
     def __str__(self):
-        return self.provider_name + "/" + self.model_name
+        return {self.provider_name} + "/" + {self.model_name}
+
+
+class GlobalResponseCounter(models.Model):
+    count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Global Response Count: {self.count}"

@@ -8,3 +8,9 @@ http://127.0.0.1:8000/api/models/
 feat(models): Add ModelProvider model
 
 feat(api): Implement /models endpoint
+
+Milestone 2 :
+http://127.0.0.1:8000/api/v1/chat/completions
+![alt text](image-2.png)
+
+feat: Implement Chat Completions Endpoint 
