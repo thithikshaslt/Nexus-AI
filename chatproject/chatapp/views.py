@@ -7,6 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 from .llm_stubs import LLMStubManager
 from chatapp.models import ModelProvider
+from django.shortcuts import render
+
 
 @api_view(['GET'])
 def get_models(request):
@@ -42,4 +44,5 @@ def chat_completions(request):
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
 
-
+def chat_view(request):
+    return render(request, "chat.html")

@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat UI</title>
+    <link rel="stylesheet" href="{% static 'chatapp/chat.css' %}">
+</head>
+<body>
+    <h1>Chat with AI</h1>
+
+    <label for="provider">Select Provider:</label>
+    <select id="provider">
+        <option value="" disabled selected></option>
+        <option value="openai">OpenAI</option>
+        <option value="anthropic">Anthropic</option>
+        <option value="gemini">Gemini</option>
+    </select>
+
+    <label for="model">Select Model:</label>
+    <select id="model">
+        <!-- Models will be dynamically populated -->
+    </select>
+
+    <label for="prompt">Enter your prompt:</label>
+    <textarea id="prompt" rows="4"></textarea>
+
+    <button onclick="sendChatRequest()">Send</button>
+
+    <h2>Response:</h2>
+    <p id="response"></p>
+    <div id="response" style="margin-top: 20px; font-weight: bold;"></div>
+
+    <script src="{% static 'chatapp/chat.js' %}"></script>
+</body>
+</html>
