@@ -1,7 +1,7 @@
-# ChatApp - Unbound Hackathon Challenge
+# Nexus AI - Unbound Security Hackathon Challenge
 
 ## Overview
-ChatApp is a Django-based chat system that supports LLM integrations with special routing for regex-based prompt redirection and file uploads. This project was developed for the Unbound Hackathon Challenge.
+Nexus AI is a Django-based chat system that supports LLM integrations with special routing for regex-based prompt redirection and file uploads. This project was developed for the Unbound Security Hackathon.
 
 ## Features
 - **Dynamic Model Provider System**: Fetch supported providers and models from the database.
@@ -23,7 +23,7 @@ cd chatapp
 ### 2. Create and Activate Virtual Environment
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+venv\Scripts\activate 
 ```
 
 ### 3. Install Dependencies
